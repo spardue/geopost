@@ -1,0 +1,6 @@
+from data import Post, Session
+import web
+
+class postlist:
+	def GET(self):
+		return list(session.query(Post).filter())

@@ -1,11 +1,11 @@
-from sqlalchemy.orm import sessionmaker
-from data import Post, engine
+from data import Post, Session
 import web
 
 class postadd:
 	def GET(self):
 		input = web.input()
 		
+		print(web.input())
 		title = input["title"]
 		longitude = input["longitude"]
 		latitude = input["latitude"]
@@ -13,13 +13,11 @@ class postadd:
 
 		post = Post(title, content, latitude, longitude)
 
-		Session = sessionmaker(bind=engine)
-
 		session = Session()
 		session.add(post)
 
 		session.commit()
 
-		return "sup bitches"
+		return post
 
 

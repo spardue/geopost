@@ -1,7 +1,10 @@
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import *
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, scoped_session
 
-Base = declarative_base()
+
+engine = create_engine('sqlite:///panda.db', echo=True)
+Base = declarative_base(bind=engine)
 
 class Post(Base):
 	__tablename__ = "post"
@@ -20,10 +23,8 @@ class Post(Base):
 		self.latitude = latitude
 
 	def __repr__(self):
-		return "Post {title: %s, content: %s, latitude: %f, longitude: %f}" % \
-		 (self.title, self.content, self.latitude, self.longitude)
+		return "{title: %s, content: %s, latitude: %f, longitude: %f, id : %d}" % \
+		 (self.title, self.content, self.latitude, self.longitude, self.id)
 
-
-
-engine = create_engine('sqlite:///:memory:', echo=True)
-Base.metadata.create_all(engine)
+Base.metadata.create_all()
+Session = scoped_session(sessionmaker(engine))

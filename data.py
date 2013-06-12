@@ -1,6 +1,7 @@
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
+from datetime import datetime
 
 
 engine = create_engine('sqlite:///panda.db', echo=True)
@@ -14,6 +15,7 @@ class Post(Base):
 	latitude = Column(Float)
 	content = Column(String)
 	title = Column(String)
+	time = Column(DateTime)
 	#and some relationship to tags || rooms
 
 	def __init__(self, title, content, longitude, latitude):
@@ -21,10 +23,11 @@ class Post(Base):
 		self.content = content
 		self.longitude = longitude
 		self.latitude = latitude
-
+		self.time = datetime.now()
+		
 	def __repr__(self):
-		return "{title: %s, content: %s, latitude: %f, longitude: %f, id : %d}" % \
-		 (self.title, self.content, self.latitude, self.longitude, self.id)
+		return "{title: %s, content: %s, latitude: %f, longitude: %f, id : %d, time : %s}" % \
+		 (self.title, self.content, self.latitude, self.longitude, self.id, self.time)
 
 Base.metadata.create_all()
 Session = scoped_session(sessionmaker(engine))

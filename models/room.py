@@ -13,7 +13,7 @@ class Room(object):
   created_at = Column(DateTime, default=datetime.utcnow)
   private = Column(Boolean)
   title = Column(String(32))
-  posts = relationship('Post', backref='room')
+  posts = relationship('Post', backref='room', cascade_backrefs=True)
 
   def __init__(self, title, private):
     self.title = title

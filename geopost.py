@@ -1,12 +1,8 @@
 import web
-from postadd import postadd
-from postget import postget
-from postlist import postlist
+from postcontroller import PostController
 
 urls = (
-	"/post/add", "postadd",
-	"/post/get/([0-9]+)", "postget",
-	"/post/list", "postlist"
+	"/post", "PostController",
 )
 
 

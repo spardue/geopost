@@ -6,12 +6,11 @@ class postadd:
 		input = web.input()
 		
 		print(web.input())
-		title = input["title"]
 		longitude = input["longitude"]
 		latitude = input["latitude"]
-		content = input["content"]
+		message = input["message"]
 
-		post = Post(title, content, latitude, longitude)
+		post = Post(message, latitude, longitude)
 
 		session = Session()
 		session.add(post)

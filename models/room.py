@@ -1,17 +1,21 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean
+from sqlalchemy import Boolean, Column, DateTime, Integer, String
+from sqlalchemy.orm import relationship, backref
 import web
 import json
+import datetime
+
+from post import Post
 
 class Room(object):
-  __tablename__ = 'rooms'
+  __tablename__ = 'room'
 
   id = Column(Integer, primary_key=True)
-  createdAt = Column(DateTime)
+  created_at = Column(DateTime, default=datetime.utcnow)
   private = Column(Boolean)
   title = Column(String(32))
+  posts = relationship('Post', backref='room')
 
   def __init__(self, title, private):
-    self.createdAt = datetime.now
     self.title = title
     self.private = private
 

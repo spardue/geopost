@@ -1,12 +1,13 @@
 import web
+from post_controller import PostController
+from db import Base
 
 urls = (
-	"/post/add", "postadd",
-	"/post/get/([0-9]+)", "postget",
-	"/post/list", "postlist"
+  '/posts', 'PostController'
 )
 
 app = web.application(urls, globals())
 
-if __name__ == "__main__":
-	app.run()
+if __name__ == '__main__':
+  Base.metadata.create_all()
+  app.run()

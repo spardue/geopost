@@ -1,9 +1,9 @@
 import web
-from post_controller import PostController
+from posts_controller import PostsController
 from db import Base
 
 urls = (
-  '/posts', 'PostController'
+  '/posts/([0-9]*)', 'PostsController'
 )
 
 app = web.application(urls, globals())

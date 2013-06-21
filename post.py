@@ -17,12 +17,12 @@ class Post(Base):
 #  room_id = Column(Integer, ForeignKey('room.id'))
 
 #  def __init__(self, title, content, longitude, latitude, room_id):
-  def __init__(self, title, content, longitude, latitude):
+  def __init__(self, title, content, latitude, longitude):
     self.title = title
     self.content = content
-    self.longitude = longitude
     self.latitude = latitude
-    self.room_id = room_id
+    self.longitude = longitude
+#    self.room_id = room_id
 
   def __repr__(self):
     return json.dumps(self.__dict__)

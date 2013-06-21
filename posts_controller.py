@@ -20,7 +20,7 @@ class PostsController(object):
       message = input['message']
       latitude = input['latitude']
       longitude = input['longitude']
-      post = Post(title, message, latitude, longitude)
+      post = Post(message, latitude, longitude)
       session = Session()
       session.add(post)
       session.commit()

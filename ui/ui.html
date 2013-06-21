@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html>
+<body>
+
+
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+
+<p id="geolocation"></p>
+
+<!-- script for getting Location -->
+<script>
+var x=document.getElementById("geolocation");
+var userLat = 0.0;
+var userLon = 0.0;
+function getLocation()
+  {
+  if (navigator.geolocation)
+    {
+    navigator.geolocation.getCurrentPosition(showPosition,showError);
+    }
+  else{x.innerHTML="Geolocation is not supported by this browser.";}
+  }
+function showPosition(position)
+  {
+  x.innerHTML="Latitude: " + position.coords.latitude + 
+  "<br>Longitude: " + position.coords.longitude;  
+  }
+function showError(error)
+  {
+  switch(error.code) 
+    {
+    case error.PERMISSION_DENIED:
+      x.innerHTML="User denied the request for Geolocation."
+      break;
+    case error.POSITION_UNAVAILABLE:
+      x.innerHTML="Location information is unavailable."
+      break;
+    case error.TIMEOUT:
+      x.innerHTML="The request to get user location timed out."
+      break;
+    case error.UNKNOWN_ERROR:
+      x.innerHTML="An unknown error occurred."
+      break;
+    }
+  }
+</script>
+
+<!-- script for viewing posts in list form -->
+<!-- script for viewing posts in map form -->
+<!-- script for viewing posts in a selected room -->
+<!-- script for setting location -->
+<form id="userForm" action="http://localhost:8080/posts/" method="post"> 
+    message: <textarea name="message"></textarea> 
+    latitude: <input type="text" name="latitude" /> 
+    longitude: <input type="text" name="longitude"/>
+    <input type="submit" value="Submit Comment" /> 
+</form>
+
+<script>
+/* attach a submit handler to the form */
+$("#userForm").submit(function(event) {
+ 
+  /* stop form from submitting normally */
+  event.preventDefault();
+ 
+  /* get some values from elements on the page: */
+  var $form = $( this ),
+      mes = $form.find( 'textarea[name="message"]' ).val(),
+      lat = $form.find( 'input[name="latitude"]').val(),
+      lon = $form.find( 'input[name="longitude"]').val(),
+      url = $form.attr( 'action' );
+ 
+  /* Send the data using post */
+  var posting = $.post( url, { message: mes, latitude: lat, longitude: lon } );
+ 
+  /* Put the results in a div */
+  posting.done(function( data ) {
+    var content = $( data ).find( '#content' );
+    $( "#result" ).empty().append( content );
+  });
+});
+</script> 
+
+<div data-role="header" data-id="foo1" data-position="fixed">
+  <div data-role="navbar">
+    <ul>
+      <li><a href="javascript: showPostWindow();">Post</a></li>
+      <li><a href="javascript: viewList();">List</a></li>
+      <li><a href="javascript: viewMap();">Map</a></li>
+      <li><a href="javascript: viewRooms();">Rooms</a></li>
+      <li><a href="javascript: getLocation();">Location</a></li>
+    </ul>
+  </div><!-- navbar -->
+</div><!-- header -->
+
+</body>
+</html>
+

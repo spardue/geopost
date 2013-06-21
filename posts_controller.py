@@ -17,11 +17,10 @@ class PostsController(object):
   def POST(self, post_id):
     if post_id == '':
       input = web.input()
-      title = input['title']
-      content = input['content']
+      message = input['message']
       latitude = input['latitude']
       longitude = input['longitude']
-      post = Post(title, content, latitude, longitude)
+      post = Post(title, message, latitude, longitude)
       session = Session()
       session.add(post)
       session.commit()

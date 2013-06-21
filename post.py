@@ -21,4 +21,11 @@ class Post(Base):
     self.longitude = longitude
 
   def __repr__(self):
-    return json.dumps(self.__dict__)
+    return json.dumps({
+        "id": self.id,
+        "created_at": self.created_at.isoformat(),
+        "updated_at": self.updated_at.isoformat(),
+        "message": self.message,
+        "longitude": self.longitude,
+        "latitude": self.latitude
+      })

@@ -16,7 +16,7 @@ class PostsController(object):
         distance = input['distance']
         # TODO Find posts within 'distance' to ('curr_latitude', 'curr_longitude')
         return list(session.query(Post).filter())
-      except TypeError:
+      except KeyError:
         return list(session.query(Post).filter())
     else:
       post = session.query(Post).get(post_id)
@@ -44,15 +44,15 @@ class PostsController(object):
       post = session.query(Post).get(post_id)
       try:
         post.message = input['message']
-      except TypeError:
+      except KeyError:
         pass
       try:
         post.latitude = input['latitude']
-      except TypeError:
+      except KeyError:
         pass
       try:
         post.longitude = input['longitude']
-      except TypeError:
+      except KeyError:
         pass
       session.add(post)
     else:

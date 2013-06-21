@@ -8,7 +8,7 @@ Functions
 
 Either:
 - Returns and list of all posts.
-- Returns a list of all posts within a `distance` of `curr_latitude` and `curr_longitude`.
+- Returns a list of all posts within a `distance` of [`curr_latitude`, `curr_longitude`].
 
 ### `POST /posts/`
 

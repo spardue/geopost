@@ -10,10 +10,10 @@ class Post(Base):
 
   id = Column(Integer, primary_key=True)
   created_at = Column(DateTime, default=datetime.utcnow())
-  updated_at = Column(DateTime, default=datetime.utcnow(), onupdate=datetime.utcnow())
-  message = Column(String(256))
-  longitude = Column(Float)
-  latitude = Column(Float)
+  updated_at = Column(DateTime, onupdate=datetime.utcnow())
+  message = Column(String(256), nullable=False)
+  longitude = Column(Float, nullable=False)
+  latitude = Column(Float, nullable=False)
 
   def __init__(self, message, latitude, longitude):
     self.message = message
@@ -24,7 +24,7 @@ class Post(Base):
     return json.dumps({
         "id": self.id,
         "created_at": self.created_at.isoformat(),
-        "updated_at": self.updated_at.isoformat(),
+        "updated_at": self.updated_at.isoformat() if self.updated_at != None else '',
         "message": self.message,
         "longitude": self.longitude,
         "latitude": self.latitude

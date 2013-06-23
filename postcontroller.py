@@ -29,5 +29,15 @@ class PostController:
 		try: # if given ID
 			id  = input["id"]
 			return str(session.query(Post).get(id))
-		except KeyError: #if not given id, just list everything
-			return list(reversed(list(session.query(Post).filter())))
+		except KeyError: 
+			try: # haven't tested this yet
+				longitude = input["longitude"]
+				latitude = input["latitude"]
+				radius = input["radius"]
+				posts = session.query(Post).select(
+					((Post.longitude - longitude)**2 + (Post.latitude - latitude)**2) <= radius**2
+				)
+				return list(posts)
+				
+			except KeyError: #if not given id, just list everything
+				return list(reversed(list(session.query(Post).filter())))

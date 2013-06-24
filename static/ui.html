@@ -43,7 +43,7 @@ function setLocation(position){
  
  function loadPostsIntoList() {
 	$.mobile.showPageLoadingMsg();
-	$.get("/post", 
+	$.get("/posts", 
 		function(data) {
 			posts = JSON.parse(data);
 			newList = "";
@@ -67,7 +67,7 @@ function setLocation(position){
 	$("#submitpost").click(function () {
 		$.mobile.showPageLoadingMsg();
 		$.post(
-			"/post", 
+			"/posts", 
 			{ 
 				"message" : $("#message").val(),  
 				"longitude" :  CURRENT_POSITION.coords.longitude,

@@ -21,14 +21,3 @@ code `200 OK` on success.
 
 Returns the specified post if it exists, otherwise returns HTTP code `404 Not
 Found`.
-
-### `PUT /posts/<id>`
-
-Updates the specified post if it exists, otherwise creates a new post. *Must*
-give a `message`, `latitude`, and `longitude`. Returns HTTP code `200 OK` on
-success.
-
-### `DELETE /posts/<id>`
-
-Deletes the specified post if it exists, otherwise returns HTTP code `404 Not
-Found`. Returns HTTP code `200 OK` on success.

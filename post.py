@@ -14,12 +14,14 @@ class Post(Base):
   message = Column(String(256), nullable=False)
   longitude = Column(Float, nullable=False)
   latitude = Column(Float, nullable=False)
+  radius = Column(Integer, nullable=False)
 
-  def __init__(self, message, latitude, longitude, time_limit=60):
+  def __init__(self, message, latitude, longitude, radius, time_limit=60):
     self.message = message
     self.latitude = latitude
     self.longitude = longitude
     self.time_limit = time_limit
+    self.radius = radius
 
   def __repr__(self):
     return json.dumps({
@@ -28,5 +30,6 @@ class Post(Base):
         "time_limit": self.time_limit,
         "message": self.message,
         "longitude": self.longitude,
-        "latitude": self.latitude
+        "latitude": self.latitude,
+	"radius" : self.radius
       })

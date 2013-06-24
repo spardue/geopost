@@ -43,21 +43,27 @@ function setLocation(position){
  function loadPostsIntoList() {
 	///alert("yo");
 	$.mobile.showPageLoadingMsg();
-	$.get("/posts", 
-		//~ {
-			//~ "longitude" :  CURRENT_POSITION.coords.longitude, 
-			//~ "latitude" : CURRENT_POSITION.coords.latitdude, 
-			//~ "radius": 1
-		//~ },
-		function(data) {
-			posts = JSON.parse(data);
-			newList = "";
-			for (var i = 0; i < posts.length; i++) {
-				newList+="<li><h3>"+posts[i].message+"</h3></li>";
-			}
-			$("#postlist").html(newList);
-			$("#postlist").listview("refresh");
-	 }).always( function() { $.mobile.hidePageLoadingMsg() });
+	
+	if (CURRENT_POSITION == null) {
+		setTimeout(loadPostsIntoList, 3000);
+	} else {
+	
+		$.get("/posts", 
+			{
+				"longitude" :  CURRENT_POSITION.coords.longitude, 
+				"latitude" : CURRENT_POSITION.coords.latitdude, 
+				"radius": 1
+			},
+			function(data) {
+				posts = JSON.parse(data);
+				newList = "";
+				for (var i = 0; i < posts.length; i++) {
+					newList+="<li><h3>"+posts[i].message+"</h3></li>";
+				}
+				$("#postlist").html(newList);
+				$("#postlist").listview("refresh");
+		 }).always( function() { $.mobile.hidePageLoadingMsg() });
+	}
  }
  
  
@@ -76,7 +82,8 @@ function setLocation(position){
 			{ 
 				"message" : $("#message").val(),  
 				"longitude" :  CURRENT_POSITION.coords.longitude,
-				"latitude" : CURRENT_POSITION.coords.latitude				
+				"latitude" : CURRENT_POSITION.coords.latitude,
+				"radius" : 1
 			}, 
 			function(data) {
 				$('.ui-dialog').dialog('close');

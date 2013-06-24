@@ -2,6 +2,13 @@ import math
 
 
 def earth_dist(lat1, lat2, lon1, lon2):
+    print lat1, lat2, lon1, lon2
+    print dir(lat1)
+    lat1 = float(lat1)
+    lat2 = float(lat2)
+    lon1 = float(lon1)
+    lon2 = float(lon2)
+    
     piover180 = math.pi / 180
     earth_radius = 6372.795477598
     dlat = lat2 - lat1

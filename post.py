@@ -24,7 +24,8 @@ class Post(Base):
   def __repr__(self):
     return json.dumps({
         "id": self.id,
-        "time_limit" : self.time_limit,
+        "created_at": self.created_at.isoformat(),
+        "time_limit": self.time_limit,
         "message": self.message,
         "longitude": self.longitude,
         "latitude": self.latitude

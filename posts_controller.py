@@ -2,6 +2,7 @@ from db import Session
 from dist import earth_dist
 from math import hypot
 from post import Post
+from sqlalchemy import desc
 
 import web
 
@@ -10,9 +11,11 @@ class PostsController:
   def list(self, latitude=None, longitude=None, radius=None):
     session = Session()
     if latitude != None and longitude != None and radius != None:
-      posts = session.query(Post).filter(earth_dist(Post.latitude, latitude, Post.longitude, longitude) <= radius).all()
+      # TODO order by Post.created_at
+      posts = session.query(Post).filter(earth_dist(Post.latitude, latitude, Post.longitude, longitude) <= radius).order_by(Post.id.desc()).all()
     else:
-      posts = session.query(Post).all()
+      # TODO order by Post.created_at
+      posts = session.query(Post).order_by(Post.id.desc()).all()
     session.close()
     return posts
 

@@ -26,7 +26,6 @@ function setLocation(position){
 	latitude = position.coords.latitude;
 	longitude = position.coords.longitude;
 
-	
 	$("#latitudeInput").val(""+latitude);
 	$("#longitudeInput").val(""+longitude);
 }
@@ -42,8 +41,14 @@ function setLocation(position){
 
  
  function loadPostsIntoList() {
+	///alert("yo");
 	$.mobile.showPageLoadingMsg();
 	$.get("/posts", 
+		//~ {
+			//~ "longitude" :  CURRENT_POSITION.coords.longitude, 
+			//~ "latitude" : CURRENT_POSITION.coords.latitdude, 
+			//~ "radius": 1
+		//~ },
 		function(data) {
 			posts = JSON.parse(data);
 			newList = "";

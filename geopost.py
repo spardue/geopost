@@ -1,12 +1,16 @@
 from db import Base
-from posts_controller import PostsController
+from postcontroller import PostController
 
 import web
 
 routes = (
-  '/posts', 'PostsController',
-  '/posts/([0-9]+)', 'PostsController'
+	'/post', 'PostController',
+	'/', 'UiGiver',
 )
+
+class UiGiver:
+	def GET(self):
+		return web.redirect("/static/ui.html")
 
 app = web.application(routes, globals())
 

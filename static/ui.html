@@ -16,10 +16,73 @@
  
  <script>
  
- $(function() {
  
-alert("hi");
- });
+ CURRENT_POSITION = null;
+ 
+
+
+function setLocation(position){
+	CURRENT_POSITION = position;
+	latitude = position.coords.latitude;
+	longitude = position.coords.longitude;
+
+	
+	$("#latitudeInput").val(""+latitude);
+	$("#longitudeInput").val(""+longitude);
+}
+ 
+ 
+ function getLocation() {
+	 if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(setLocation);
+	 } else {
+		alert("gelocation not supported");
+	}
+}
+
+ 
+ function loadPostsIntoList() {
+	$.mobile.showPageLoadingMsg();
+	$.get("/post", 
+		function(data) {
+			posts = JSON.parse(data);
+			newList = "";
+			for (var i = 0; i < posts.length; i++) {
+				newList+="<li><h3>"+posts[i].message+"</h3></li>";
+			}
+			$("#postlist").html(newList);
+			$("#postlist").listview("refresh");
+	 }).always( function() { $.mobile.hidePageLoadingMsg() });
+ }
+ 
+ 
+ $(function() {
+	getLocation();
+	loadPostsIntoList();
+	
+	$("#refresh").click(function() {
+		loadPostsIntoList();
+	});
+	
+	$("#submitpost").click(function () {
+		$.mobile.showPageLoadingMsg();
+		$.post(
+			"/post", 
+			{ 
+				"message" : $("#message").val(),  
+				"longitude" :  CURRENT_POSITION.coords.longitude,
+				"latitude" : CURRENT_POSITION.coords.latitude				
+			}, 
+			function(data) {
+				$('.ui-dialog').dialog('close');
+				$("#message").val('');
+				loadPostsIntoList();
+			}
+		).always(function() { $.mobile.hidePageLoadingMsg() });
+	});
+	
+});
+ 
  
  
  </script>
@@ -28,7 +91,37 @@ alert("hi");
 
 <body>
 
-<div data-rle="page" id="home"></div>
+<div data-role="page" id="home">
+	<ul data-role="listview" data-inset="true" id="postlist">
+	</ul>
 
+
+	<div data-role="footer" data-position="fixed">
+		<div data-role="controlgroup" data-type="horizontal">
+			<a href="#addpost" data-rel="dialog" data-role="button" data-icon="add">Add</a>
+			<button data-icon="refresh" id="refresh">Refresh</button>
+		</div>
+	</div>
+
+
+</div>
+<div data-role="page" id="addpost">
+	<div data-role="header">
+		<h1>Add Post</h1>
+	</div>
+	
+
+	<div data-role="fieldcontain" class="ui-hide-label">
+		<input type="text" id="message" placeholder="Message"/>
+		<input id="longitudeInput" type="text" name="longitude"/>
+		<input id="latitudeInput" type="text" name="latitude"/>
+		<button id="submitpost">Submit</submit>
+	</div>
+	
+	</form>
+	
+	
+</div>
 
 </body>
+</html>

@@ -1,10 +1,11 @@
 from db import Base
-from postcontroller import PostController
+from posts_controller import PostsController
 
 import web
 
 routes = (
-	'/post', 'PostController',
+    '/posts', 'PostsController',
+	'/posts/([0-9]+)', 'PostsController',
 	'/', 'UiGiver',
 )
 

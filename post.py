@@ -10,7 +10,7 @@ class Post(Base):
 
   id = Column(Integer, primary_key=True)
   created_at = Column(DateTime, default=datetime.utcnow())
-  #updated_at = Column(DateTime, onupdate=datetime.utcnow())
+  updated_at = Column(DateTime, onupdate=datetime.utcnow())
   time_limit = Column(Integer, nullable=False)
   message = Column(String(256), nullable=False)
   longitude = Column(Float, nullable=False)
@@ -26,7 +26,7 @@ class Post(Base):
     return json.dumps({
         "id": self.id,
         "created_at": self.created_at.isoformat(),
-	"time_limit" : self.time_limit,
+        "time_limit" : self.time_limit,
         "message": self.message,
         "longitude": self.longitude,
         "latitude": self.latitude

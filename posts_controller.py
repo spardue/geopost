@@ -27,8 +27,8 @@ class PostsController:
       return post
 
   # add a new post
-  def add(self, message, latitude, longitude):
-    post = Post(message, latitude, longitude)
+  def add(self, message, latitude, longitude, time_limit=60):
+    post = Post(message, latitude, longitude, time_limit)
     session = Session()
     session.add(post)
     session.commit()
@@ -75,13 +75,14 @@ class PostsController:
       raise web.notfound()
     else:
       input = web.input()
+      message = input['message']
+      latitude = input['latitude']
+      longitude = input['longitude']
       try:
-        message = input['message']
-        latitude = input['latitude']
-        longitude = input['longitude']
+        time_limit = input['time_limit']
+        return self.add(message, latitude, longitude, time_limit)
       except KeyError:
-        raise
-      return self.add(message, latitude, longitude)
+        return self.add(message, latitude, longitude)
 
   # PUT /posts/<id>
   def PUT(self, post_id=None):

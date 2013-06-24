@@ -35,25 +35,6 @@ class PostsController:
     session.close()
     return post
 
-  # update an existing post
-  def update(self, post_id, message, latitude, longitude):
-    session = Session()
-    post = session.query(Post).get(post_id).update({'message': message, 'latitude': latitude, 'longitude': longitude})
-    if post == None:
-      session.close()
-      raise web.notfound()
-    else:
-      session.commit()
-      session.close()
-
-  # delete an existing post
-  def destroy(self, post_id):
-    session = Session()
-    post = session.query(Post).get(post_id).delete()
-    session.close()
-    if post == None:
-      raise web.notfound()
-
   # GET /posts
   # GET /posts/<id>
   def GET(self, post_id=None):
@@ -80,27 +61,6 @@ class PostsController:
       longitude = input['longitude']
       try:
         time_limit = input['time_limit']
-        return self.add(message, latitude, longitude, time_limit)
+        self.add(message, latitude, longitude, time_limit)
       except KeyError:
-        return self.add(message, latitude, longitude)
-
-  # PUT /posts/<id>
-  def PUT(self, post_id=None):
-    if post_id == None:
-      raise web.notfound()
-    else:
-      input = web.input()
-      try:
-        message = input['message']
-        latitude = input['latitude']
-        longitude = input['longitude']
-      except KeyError:
-        raise
-      return self.update(post_id, message, latitude, longitude)
-
-  # DELETE /posts/<id>
-  def DELETE(self, post_id=None):
-    if post_id == None:
-      raise web.notfound()
-    else:
-      self.delete(post_id)
+        self.add(message, latitude, longitude)

@@ -8,16 +8,16 @@ import web
 
 class PostsController:
     # list all posts
-    def list(self, latitude=None, longitude=None, radius=None):
+    def list(self):
         session = Session()
-        if latitude != None and longitude != None and radius != None:
-            # TODO order by Post.created_at
-            print "hi"
-            posts = session.query(Post).filter(earth_dist(Post.latitude, latitude, Post.longitude, longitude) <= radius).order_by(Post.id.desc()).all()
-        else:
-            # TODO order by Post.created_at
-            posts = session.query(Post).order_by(Post.id.desc()).all()
+        posts = session.query(Post).order_by(Post.created_at.asc()).all()
         session.close()
+        return posts
+
+    def list_in_radius(self, latitude, longitude, radius):
+        session = Session()
+        posts = session.query(Post).filter(earth_dist(Post.latitude, latitude, Post.longitude, longitude) <= radius).order_by(Post.created_at.desc()).all()
+        session.close();
         return posts
 
     # show a single post
@@ -46,13 +46,12 @@ class PostsController:
         if post_id == None:
             input = web.input()
             try:
-                print "@"*55555
                 latitude = input['latitude']
                 longitude = input['longitude']
                 radius = input['radius']
-                print "I AM IN GET DOING GET THINGS YO"
-                return self.list(latitude, longitude, radius)
+                return self.list_in_radius(latitude, longitude, radius)
             except KeyError:
+                print "got key error"
                 return self.list()
         else:
             return self.show(post_id)

@@ -10,18 +10,16 @@ class Post(Base):
 
     id = Column(Integer, primary_key=True)
     created_at = Column(DateTime, default=datetime.utcnow())
-    time_limit = Column(Integer, nullable=False)
     message = Column(String(256), nullable=False)
-    longitude = Column(Float, nullable=False)
     latitude = Column(Float, nullable=False)
-    radius = Column(Integer, nullable=False)
+    longitude = Column(Float, nullable=False)
+    time_limit = Column(Integer, nullable=False)
 
     def __init__(self, message, latitude, longitude, radius, time_limit=60):
         self.message = message
         self.latitude = latitude
         self.longitude = longitude
         self.time_limit = time_limit
-        self.radius = radius
 
     def __repr__(self):
         return json.dumps({
@@ -29,7 +27,6 @@ class Post(Base):
             "created_at": self.created_at.isoformat(),
             "time_limit": self.time_limit,
             "message": self.message,
-            "longitude": self.longitude,
             "latitude": self.latitude,
-            "radius" : self.radius
+            "longitude": self.longitude,
         })

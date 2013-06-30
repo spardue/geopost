@@ -108,7 +108,7 @@ function setLocation(position){
 	</ul>
 
 
-	<div data-role="footer" data-position="fixed">
+	<div data-role="header" data-position="fixed">
 		<div data-role="controlgroup" data-type="horizontal">
 			<a href="#addpost" data-rel="dialog" data-role="button" data-icon="add">Add</a>
 			<button data-icon="refresh" id="refresh">Refresh</button>
@@ -124,9 +124,7 @@ function setLocation(position){
 	
 
 	<div data-role="fieldcontain" class="ui-hide-label">
-		<input type="text" id="message" placeholder="Message"/>
-		<input id="longitudeInput" type="text" name="longitude"/>
-		<input id="latitudeInput" type="text" name="latitude"/>
+		<textarea id="message" placeholder="Message"></textarea>
 		<button id="submitpost">Submit</submit>
 	</div>
 	

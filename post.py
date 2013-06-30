@@ -9,7 +9,7 @@ class Post(Base):
     __tablename__ = 'post'
 
     id = Column(Integer, primary_key=True)
-    created_at = Column(DateTime, default=datetime.utcnow())
+    created_at = Column(DateTime, default=datetime.utcnow)
     message = Column(String(256), nullable=False)
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)

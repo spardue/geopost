@@ -10,7 +10,7 @@ class PostsController:
     # list all posts
     def list(self):
         session = Session()
-        posts = session.query(Post).order_by(Post.created_at.asc()).all()
+        posts = session.query(Post).order_by(desc(Post.created_at)).all()
         session.close()
         return posts
 
@@ -18,12 +18,11 @@ class PostsController:
         session = Session()
 
         statement = "((latitude - :lat)*(latitude - :lat) + (longitude - :long)*(longitude - :long)) <= (:rad*:rad)"
-        posts = session.query(Post).filter(statement).params(		
+        posts = session.query(Post).filter(statement).params(
             lat = latitude,
             long = longitude,
             rad = radius
-        ).order_by(Post.id.desc()).all()
-        #).order_by(Post.created_at.desc()).all()
+        ).order_by(desc(Post.created_at)).all()
 
         #posts = session.query(Post).filter((Post.latitude - latitude)*(Post.latitude - latitude) + (Post.latitude -latitude)*(Post.latitude -latitude) > radius*radius)
         #posts = session.query(Post).filter(earth_dist(Post.latitude, latitude, Post.longitude, longitude) <= radius).order_by(Post.created_at.desc()).all()

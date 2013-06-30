@@ -16,19 +16,17 @@ class PostsController:
 
     def list_in_radius(self, latitude, longitude, radius):
         session = Session()
-	
-	
-	statement = "((latitude - :lat)*(latitude - :lat) + (longitude - :long)*(longitude - :long)) <= (:rad*:rad)"
-	posts = session.query(Post).filter(statement).params(		
-		lat = latitude,
-		long = longitude,
-		rad = radius
-	).order_by(Post.created_at.desc()).all()
-	
-	print posts
+
+        statement = "((latitude - :lat)*(latitude - :lat) + (longitude - :long)*(longitude - :long)) <= (:rad*:rad)"
+        posts = session.query(Post).filter(statement).params(		
+            lat = latitude,
+            long = longitude,
+            rad = radius
+        ).order_by(Post.id.desc()).all()
+        #).order_by(Post.created_at.desc()).all()
 
         #posts = session.query(Post).filter((Post.latitude - latitude)*(Post.latitude - latitude) + (Post.latitude -latitude)*(Post.latitude -latitude) > radius*radius)
-	#posts = session.query(Post).filter(earth_dist(Post.latitude, latitude, Post.longitude, longitude) <= radius).order_by(Post.created_at.desc()).all()
+        #posts = session.query(Post).filter(earth_dist(Post.latitude, latitude, Post.longitude, longitude) <= radius).order_by(Post.created_at.desc()).all()
         session.close()
         return posts
 
@@ -57,12 +55,12 @@ class PostsController:
         if post_id == None:
             input = web.input()
             try:
-		print input
-		print ".."
+                print input
+                print ".."
                 latitude = input['latitude']
-		print "..."
+                print "..."
                 longitude = input['longitude']
-		print "...."
+                print "...."
                 radius = input['radius']
                 return self.list_in_radius(latitude, longitude, radius)
             except KeyError:

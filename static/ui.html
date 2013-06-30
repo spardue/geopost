@@ -50,9 +50,9 @@ function setLocation(position){
 	
 		$.get("/posts", 
 			{
-				"longitude" :  CURRENT_POSITION.coords.longitude, 
-				"latitude" : CURRENT_POSITION.coords.latitdude, 
-				"radius": 1
+				"longitude" :  CURRENT_POSITION.coords.longitude,
+				"latitude" : CURRENT_POSITION.coords.latitude, 				
+				"radius": 1,
 			},
 			function(data) {
 				posts = JSON.parse(data);

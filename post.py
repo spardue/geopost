@@ -15,7 +15,7 @@ class Post(Base):
     longitude = Column(Float, nullable=False)
     time_limit = Column(Integer, nullable=False)
 
-    def __init__(self, message, latitude, longitude, radius, time_limit=60):
+    def __init__(self, message, latitude, longitude,  time_limit=60):
         self.message = message
         self.latitude = latitude
         self.longitude = longitude

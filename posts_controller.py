@@ -16,8 +16,20 @@ class PostsController:
 
     def list_in_radius(self, latitude, longitude, radius):
         session = Session()
-        posts = session.query(Post).filter(earth_dist(Post.latitude, latitude, Post.longitude, longitude) <= radius).order_by(Post.created_at.desc()).all()
-        session.close();
+	
+	
+	statement = "((latitude - :lat)*(latitude - :lat) + (longitude - :long)*(longitude - :long)) <= (:rad*:rad)"
+	posts = session.query(Post).filter(statement).params(		
+		lat = latitude,
+		long = longitude,
+		rad = radius
+	).all()
+	
+	print posts
+
+        #posts = session.query(Post).filter((Post.latitude - latitude)*(Post.latitude - latitude) + (Post.latitude -latitude)*(Post.latitude -latitude) > radius*radius)
+	#posts = session.query(Post).filter(earth_dist(Post.latitude, latitude, Post.longitude, longitude) <= radius).order_by(Post.created_at.desc()).all()
+        session.close()
         return posts
 
     # show a single post
@@ -31,9 +43,8 @@ class PostsController:
             return post
 
     # add a new post
-    def add(self, message, latitude, longitude, radius, time_limit=60):
-        print radius
-        post = Post(message, latitude, longitude, radius, time_limit)
+    def add(self, message, latitude, longitude, time_limit=60):
+        post = Post(message, latitude, longitude, time_limit)
         session = Session()
         session.add(post)
         session.commit()
@@ -46,8 +57,12 @@ class PostsController:
         if post_id == None:
             input = web.input()
             try:
+		print input
+		print ".."
                 latitude = input['latitude']
+		print "..."
                 longitude = input['longitude']
+		print "...."
                 radius = input['radius']
                 return self.list_in_radius(latitude, longitude, radius)
             except KeyError:
@@ -65,9 +80,8 @@ class PostsController:
             message = input['message']
             latitude = input['latitude']
             longitude = input['longitude']
-            radius = input['radius']
             try:
                 time_limit = input['time_limit']
-                self.add(message, latitude, longitude, radius, time_limit)
+                self.add(message, latitude, longitude, time_limit)
             except KeyError:
-                self.add(message, latitude, longitude, radius)
+                self.add(message, latitude, longitude)

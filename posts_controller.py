@@ -23,7 +23,7 @@ class PostsController:
 		lat = latitude,
 		long = longitude,
 		rad = radius
-	).all()
+	).order_by(Post.created_at.desc()).all()
 	
 	print posts
 

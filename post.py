@@ -1,6 +1,6 @@
 from datetime import datetime
 from db import Base
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, Float, Integer, String
 
 import json
 import web

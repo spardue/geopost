@@ -1,5 +1,4 @@
 from db import Session
-from dist import earth_dist
 from math import hypot
 from post import Post
 from sqlalchemy import desc

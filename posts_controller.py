@@ -49,16 +49,11 @@ class PostsController:
         if post_id == None:
             input = web.input()
             try:
-                print input
-                print ".."
                 latitude = input['latitude']
-                print "..."
                 longitude = input['longitude']
-                print "...."
                 radius = input['radius']
                 return self.list_in_radius(latitude, longitude, radius)
             except KeyError:
-                print "got key error"
                 return self.list()
         else:
             return self.show(post_id)

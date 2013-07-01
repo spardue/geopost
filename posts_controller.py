@@ -16,16 +16,12 @@ class PostsController:
 
     def list_in_radius(self, latitude, longitude, radius):
         session = Session()
-
-        statement = "((latitude - :lat)*(latitude - :lat) + (longitude - :long)*(longitude - :long)) <= (:rad*:rad)"
-        posts = session.query(Post).filter(statement).params(
+        haversine = "(6371 * acos(cos(radians(:lat)) * cos(radians(latitude)) * cos( radians(longitude) - radians(:lon)) + sin(radians(:lat)) * sin(radians(latitude)))) <= :rad"
+        posts = session.query(Post).filter(haversine).params(
             lat = latitude,
-            long = longitude,
+            lon = longitude,
             rad = radius
         ).order_by(desc(Post.created_at)).all()
-
-        #posts = session.query(Post).filter((Post.latitude - latitude)*(Post.latitude - latitude) + (Post.latitude -latitude)*(Post.latitude -latitude) > radius*radius)
-        #posts = session.query(Post).filter(earth_dist(Post.latitude, latitude, Post.longitude, longitude) <= radius).order_by(Post.created_at.desc()).all()
         session.close()
         return posts
 

@@ -15,7 +15,7 @@ class PostsController:
 
     def list_in_radius(self, latitude, longitude, radius):
         session = Session()
-        haversine = "(6371 * acos(cos(radians(:lat)) * cos(radians(latitude)) * cos( radians(longitude) - radians(:lon)) + sin(radians(:lat)) * sin(radians(latitude)))) <= :rad"
+        haversine = "(6371 * acos(cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - radians(:lon)) + sin(radians(:lat)) * sin(radians(latitude)))) <= :rad"
         posts = session.query(Post).filter(haversine).params(
             lat = latitude,
             lon = longitude,

@@ -3,12 +3,11 @@ from db import Base
 from sqlalchemy import Column, DateTime, Float, Integer, String
 
 import json
-import web
 
 class Post(Base):
     __tablename__ = 'post'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, autoincrement=True, primary_key=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     message = Column(String(256), nullable=False)
     latitude = Column(Float, nullable=False)

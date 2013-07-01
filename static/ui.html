@@ -83,7 +83,7 @@ function setLocation(position){
 				"message" : $("#message").val(),  
 				"longitude" :  CURRENT_POSITION.coords.longitude,
 				"latitude" : CURRENT_POSITION.coords.latitude,
-				"radius" : 1
+				"radius" : 10
 			}, 
 			function(data) {
 				$('.ui-dialog').dialog('close');

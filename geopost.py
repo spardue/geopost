@@ -11,7 +11,8 @@ routes = (
 
 class UiGiver:
     def GET(self):
-        return web.redirect("/static/ui.html")
+        # return web.redirect("/static/ui.html")
+        return web.redirect("/static/test_ui.html")
 
 app = web.application(routes, globals())
 

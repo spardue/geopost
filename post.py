@@ -3,7 +3,7 @@ from db import Base
 from sqlalchemy import Column, DateTime, Float, Integer, String
 
 import json
-import web
+import cgi
 
 class Post(Base):
     __tablename__ = 'post'
@@ -26,7 +26,7 @@ class Post(Base):
             "id": self.id,
             "created_at": self.created_at.isoformat(),
             "time_limit": self.time_limit,
-            "message": self.message,
+            "message": cgi.escape(self.message), #prvents insertion of javascript on the client side
             "latitude": self.latitude,
             "longitude": self.longitude,
         })

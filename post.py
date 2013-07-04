@@ -1,6 +1,6 @@
 from datetime import datetime
 from db import Base
-from sqlalchemy import Column, DateTime, Float, Integer, String
+from sqlalchemy import Column, DateTime, Float, Integer, String, TIMESTAMP, text
 
 import json
 import cgi
@@ -9,7 +9,7 @@ class Post(Base):
     __tablename__ = 'post'
 
     id = Column(Integer, primary_key=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(TIMESTAMP, server_default=text('CURRENT_TIMESTAMP'))
     message = Column(String(256), nullable=False)
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
@@ -26,7 +26,7 @@ class Post(Base):
             "id": self.id,
             "created_at": self.created_at.isoformat(),
             "time_limit": self.time_limit,
-            "message": cgi.escape(self.message), #prvents insertion of javascript on the client side
+            "message": cgi.escape(self.message), #prevents insertion of javascript on the client side
             "latitude": self.latitude,
             "longitude": self.longitude,
         })

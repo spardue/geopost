@@ -92,9 +92,7 @@ function makeSet(array){
 						for (var j = 0; j < hashes.length; j++) {
 							message = message.replace(hashes[j], "<span class='hash'>"+hashes[j]+"</span>");
 						}
-					}
-					
-					
+					}					
 					$("#postlist").append("<li><h3>"+message+"</h3></li>");
 				}
 				$("span.hash").click(hashClickHandler);

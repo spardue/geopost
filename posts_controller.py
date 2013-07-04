@@ -10,7 +10,7 @@ import time
 class PostsController:
     # list all posts
     
-    timeOutFilter = "DATE_ADD(created_at, INTERVAL time_limit second) >= NOW()"
+    timeOutFilter = "DATE_ADD(created_at, INTERVAL time_limit second) > NOW()"
     
     def list(self):
         session = Session()

@@ -3,24 +3,29 @@ from math import hypot
 from post import Post
 from sqlalchemy import desc
 
+
 import web
+import time
 
 class PostsController:
     # list all posts
+    
+    timeOutFilter = "DATE_ADD(created_at, INTERVAL time_limit second) >= NOW()"
+    
     def list(self):
         session = Session()
-        posts = session.query(Post).order_by(desc(Post.created_at)).all()
+        posts = session.query(Post).filter(self.timeOutFilter).order_by(desc(Post.created_at)).all()
         session.close()
         return posts
 
     def list_in_radius(self, latitude, longitude, radius):
         session = Session()
         haversine = "(6371 * acos(cos(radians(:lat)) * cos(radians(latitude)) * cos( radians(longitude) - radians(:lon)) + sin(radians(:lat)) * sin(radians(latitude)))) <= :rad"
-        posts = session.query(Post).filter(haversine).params(
+	posts = session.query(Post).filter(haversine).params(
             lat = latitude,
             lon = longitude,
             rad = radius
-        ).order_by(desc(Post.created_at)).all()
+        ).filter(self.timeOutFilter).order_by(desc(Post.created_at)).all()
         session.close()
         return posts
 
@@ -29,6 +34,8 @@ class PostsController:
         session = Session()
         post = session.query(Post).get(post_id)
         session.close()
+	if (post.created_at.time() + post.time_limit) >= time.time():
+		post = None
         if post == None:
             raise web.notfound()
         else:

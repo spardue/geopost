@@ -64,6 +64,8 @@ function makeSet(array){
 		setTimeout(loadPostsIntoList, 3000);
 	} else {
 	
+		var filterStr = $('input[data-type="search"]').val();
+		
 		$.get("/posts", 
 			{
 				"longitude" :  CURRENT_POSITION.coords.longitude,
@@ -90,31 +92,45 @@ function makeSet(array){
 						for (var j = 0; j < hashes.length; j++) {
 							message = message.replace(hashes[j], "<span class='hash'>"+hashes[j]+"</span>");
 						}
-					
 					}
 					
 					
 					$("#postlist").append("<li><h3>"+message+"</h3></li>");
-					
-					
 				}
 				$("span.hash").click(hashClickHandler);
 				$("#postlist").listview().listview("refresh");
+				filterBarSearchBy(filterStr);
 			}
-		).always( function() { $.mobile.hidePageLoadingMsg();});
+		).always( function() { 
+			$.mobile.hidePageLoadingMsg();
+		});
 	}
  }
  
-function hashClickHandler(e) {
-	$('input[data-type="search"]').val($(e.target).html());
+ 
+ function filterBarSearchBy(searchStr){
+	//this is a hack to insure there is an update
+	$('input[data-type="search"]').val("doggy");
 	$('input[data-type="search"]').trigger("keyup");
+	$('input[data-type="search"]').val(searchStr);
+	$('input[data-type="search"]').trigger("keyup");
+ }
+ 
+function hashClickHandler(e) {
+	searchStr = $(e.target).html();
+	filterBarSearchBy(searchStr);
+}
+
+function initList() {
+	getLocation();
+	loadPostsIntoList();	
 }
 
  $(document).ready(function(){
-	getLocation();
-	loadPostsIntoList();	
+	initList();
+	
 	$("#refresh").click(function() {
-		loadPostsIntoList();
+		initList();
 	});
 	
 	$("#submitpost").click(function () {

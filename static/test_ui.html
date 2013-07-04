@@ -59,12 +59,12 @@ function setLocation(position){
 				newList = "";
 				for (var i = 0; i < posts.length; i++) {
 					if (posts[i].message.indexOf("http://") == -1) {
-					newList+="<div data-role='collapsible'><h3>"+posts[i].message+"</h3><p>"+posts[i].message+"</p></div>";
+					newList+="<div data-role='collapsible'><h3>"+posts[i].message+"</h3><p style='word-wrap:break-word;'>"+posts[i].message+"</p></div>";
 					} else {
 					var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
 					var newText = posts[i].message;
 					newText = newText.replace(exp, "<a href='$1'>$1</a>");
-					newList+="<div data-role='collapsible'><h3>"+posts[i].message+"</h3><p>"+newText+"</p></div>";
+					newList+="<div data-role='collapsible'><h3>"+posts[i].message+"</h3><p style='word-wrap:break-word;'>"+newText+"</p></div>";
 					}
 				}
 				$("#postlist").html(newList);

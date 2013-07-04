@@ -14,11 +14,17 @@
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
  
+ 
+ <style>
+ span.hash{ color : blue };
+ 
+ </style>
  <script>
  
  
  CURRENT_POSITION = null;
- 
+ //thanks: http://stackoverflow.com/questions/8188645/javascript-regex-to-match-a-url-in-a-field-of-text
+ URL_REGEX = "(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]";
 
 
 function setLocation(position){
@@ -39,6 +45,16 @@ function setLocation(position){
 	}
 }
 
+
+
+function makeSet(array){
+	set = {}
+	for (var i = 0; i < array.length; i++){
+		set[array[i]] = true;
+	}
+	return set;
+}
+
  
  function loadPostsIntoList() {
 	///alert("yo");
@@ -56,47 +72,80 @@ function setLocation(position){
 			},
 			function(data) {
 				posts = JSON.parse(data);
-				newList = "";
+				$("#postlist").html("");
 				for (var i = 0; i < posts.length; i++) {
-					newList+="<li><h3>"+posts[i].message+"</h3></li>";
+					message = posts[i].message;
+					
+					var urls = message.match(new RegExp(URL_REGEX, "ig"));
+					
+					if (urls != null){
+						urls = makeSet(urls);
+						for (var url in urls) {
+							message = message.replace(url, "<a href='"+url+"'>"+url+"</a>");
+						}
+					}
+					
+					var hashes = message.match(new RegExp("#[a-z0-9]+", "gi"))
+					if (hashes != null) {
+						for (var j = 0; j < hashes.length; j++) {
+							message = message.replace(hashes[j], "<span class='hash'>"+hashes[j]+"</span>");
+						}
+					
+					}
+					
+					
+					$("#postlist").append("<li><h3>"+message+"</h3></li>");
+					
+					
 				}
-				$("#postlist").html(newList);
-				$("#postlist").listview("refresh");
-		 }).always( function() { $.mobile.hidePageLoadingMsg() });
+				$("span.hash").click(hashClickHandler);
+				$("#postlist").listview().listview("refresh");
+			}
+		).always( function() { $.mobile.hidePageLoadingMsg();});
 	}
  }
  
- 
- $(function() {
+function hashClickHandler(e) {
+	$('input[data-type="search"]').val($(e.target).html());
+	$('input[data-type="search"]').trigger("keyup");
+}
+
+ $(document).ready(function(){
 	getLocation();
-	loadPostsIntoList();
-	
+	loadPostsIntoList();	
 	$("#refresh").click(function() {
 		loadPostsIntoList();
 	});
 	
 	$("#submitpost").click(function () {
-		$.mobile.showPageLoadingMsg();
-		$.post(
-			"/posts", 
-			{ 
-				"message" : $("#message").val(),  
-				"longitude" :  CURRENT_POSITION.coords.longitude,
-				"latitude" : CURRENT_POSITION.coords.latitude,
-				"radius" : 10
-			}, 
-			function(data) {
-				$('.ui-dialog').dialog('close');
-				$("#message").val('');
-				loadPostsIntoList();
-			}
-		).always(function() { $.mobile.hidePageLoadingMsg() });
+		if ( $("#message").val() == "") {
+			alert("Message must contain something!");
+                } else {
+			$.mobile.showPageLoadingMsg();
+			$.post(
+				"/posts", 
+				{	 
+					"message" : $("#message").val(),  
+					"longitude" :  CURRENT_POSITION.coords.longitude,
+					"latitude" : CURRENT_POSITION.coords.latitude,
+					"radius" : 1
+				}, 
+				function(data) {
+					$('.ui-dialog').dialog('close');
+					$("#message").val('');
+					loadPostsIntoList();
+				}
+			).always(function() { $.mobile.hidePageLoadingMsg() });
+		}
 	});
 	
+	$("span.hash").click(hashClickHandler);
+	
 });
- 
- 
- 
+
+
+
+
  </script>
  
 </head>
@@ -104,9 +153,6 @@ function setLocation(position){
 <body>
 
 <div data-role="page" id="home">
-	<ul data-role="listview" data-inset="true" id="postlist">
-	</ul>
-
 
 	<div data-role="header" data-position="fixed">
 		<div data-role="controlgroup" data-type="horizontal">
@@ -115,6 +161,9 @@ function setLocation(position){
 		</div>
 	</div>
 
+	
+	<br>
+	<ul data-role="listview" data-filter="true" id="postlist"></ul>
 
 </div>
 <div data-role="page" id="addpost">
@@ -124,7 +173,7 @@ function setLocation(position){
 	
 
 	<div data-role="fieldcontain" class="ui-hide-label">
-		<textarea id="message" placeholder="Message"></textarea>
+		<input type="text" id="message" placeholder="Message"/>
 		<button id="submitpost">Submit</submit>
 	</div>
 	

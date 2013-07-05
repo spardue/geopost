@@ -61,7 +61,7 @@ function makeSet(array){
 	$.mobile.showPageLoadingMsg();
 	
 	if (CURRENT_POSITION == null) {
-		setTimeout(loadPostsIntoList, 3000);
+		setTimeout(loadPostsIntoList,  200);
 	} else {
 	
 		var filterStr = $('input[data-type="search"]').val();

@@ -87,7 +87,7 @@ function makeSet(array){
 						}
 					}
 					
-					var hashes = message.match(new RegExp("#[a-z0-9]+", "gi"))
+					var hashes = message.match(new RegExp("#[a-z0-9]+", "gi"));
 					if (hashes != null) {
 						for (var j = 0; j < hashes.length; j++) {
 							message = message.replace(hashes[j], "<span class='hash'>"+hashes[j]+"</span>");
@@ -159,6 +159,15 @@ function initList() {
 	
 	$("span.hash").click(hashClickHandler);
 	
+	$("#addpost").click(function() {
+		$("#message").val('');
+		var filterStr = $('input[data-type="search"]').val();
+		var hashes = filterStr.match(new RegExp("#[0-9a-z]+", "ig"));
+		if (hashes != null){
+			hashes = hashes.join(" ");
+			$("#message").val(hashes);
+		}
+	});
 });
 
 

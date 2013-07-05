@@ -4,14 +4,14 @@ geopost
 Functions
 ---------
 
-### `GET /posts/`
+### `GET /posts`
 
 Either:
 - Returns and list of all posts.
 - Returns a list of all posts within a `distance` of [`curr_latitude`,
   `curr_longitude`].
 
-### `POST /posts/`
+### `POST /posts`
 
 Creates a new post. *Must* give it a `message`, `longitude`, and `latitude`
 otherwise it will return HTTP code `500 Internal Server Error`. Returns HTTP

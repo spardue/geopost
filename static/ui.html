@@ -70,7 +70,7 @@ function makeSet(array){
 			{
 				"longitude" :  CURRENT_POSITION.coords.longitude,
 				"latitude" : CURRENT_POSITION.coords.latitude, 				
-				"radius": 1,
+				"radius": 1
 			},
 			function(data) {
 				posts = JSON.parse(data);
@@ -108,7 +108,7 @@ function makeSet(array){
  
  function filterBarSearchBy(searchStr){
 	//this is a hack to insure there is an update
-	$('input[data-type="search"]').val("doggy");
+	$('input[data-type="search"]').val("04-19-1992");
 	$('input[data-type="search"]').trigger("keyup");
 	$('input[data-type="search"]').val(searchStr);
 	$('input[data-type="search"]').trigger("keyup");
@@ -135,6 +135,9 @@ function initList() {
 		if ( $("#message").val() == "") {
 			alert("Message must contain something!");
                 } else {
+		
+			//yeah..this needs to be improved and will probably break if more than one select tags are used
+			var time_limit = $($("select")[0]).find(":selected").val();
 			$.mobile.showPageLoadingMsg();
 			$.post(
 				"/posts", 
@@ -142,7 +145,8 @@ function initList() {
 					"message" : $("#message").val(),  
 					"longitude" :  CURRENT_POSITION.coords.longitude,
 					"latitude" : CURRENT_POSITION.coords.latitude,
-					"radius" : 1
+					"radius" : 1,
+					"time_limit" : time_limit
 				}, 
 				function(data) {
 					$('.ui-dialog').dialog('close');
@@ -187,7 +191,20 @@ function initList() {
 	
 
 	<div data-role="fieldcontain" class="ui-hide-label">
-		<input type="text" id="message" placeholder="Message"/>
+		<textarea id="message" placeholder="Message"></textarea>
+		<label for="time_limit" class="select">Time limit:</label>
+		<select id="time_limt34">
+			<option value="60">1 minute</option>
+			<option value="300">5 minutes</option>
+			<option value="900">15 minues</option>
+			<option value="1800">30 minutes</option>
+			<option value="3600">1 hour</option>
+			<option value="10800">3 hours</option>
+			<option value="43200">12 hours</option>
+			<option value="86400">1 day</option>
+			<option value="259200">3 days</option>
+			<option value="604800">1 week</option>
+		</select>
 		<button id="submitpost">Submit</submit>
 	</div>
 	

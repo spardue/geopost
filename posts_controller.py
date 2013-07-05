@@ -75,7 +75,13 @@ class PostsController:
             latitude = input['latitude']
             longitude = input['longitude']
             try:
-                time_limit = input['time_limit']
-                self.add(message, latitude, longitude, time_limit)
+		print "sup"
+		try:
+			print "yooooo"
+			time_limit = int(input['time_limit'])
+			print time_limit
+			self.add(message, latitude, longitude, time_limit)
+		except ValueError:
+			return "time_limit must be an integer"
             except KeyError:
                 self.add(message, latitude, longitude)

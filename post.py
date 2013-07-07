@@ -16,7 +16,7 @@ class Post(Base):
     time_limit = Column(Integer, nullable=False)
 
     def __init__(self, message, latitude, longitude,  time_limit=60):
-        self.message = message
+        self.message = cgi.escape(message) # strip html/javascript
         self.latitude = latitude
         self.longitude = longitude
         self.time_limit = time_limit
@@ -26,7 +26,7 @@ class Post(Base):
             "id": self.id,
             "created_at": self.created_at.isoformat(),
             "time_limit": self.time_limit,
-            "message": cgi.escape(self.message), #prevents insertion of javascript on the client side
+            "message": self.message,
             "latitude": self.latitude,
             "longitude": self.longitude,
         })

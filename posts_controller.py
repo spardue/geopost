@@ -21,7 +21,7 @@ class PostsController:
     def list_in_radius(self, latitude, longitude, radius):
         session = Session()
         haversine = "(6371 * acos(cos(radians(:lat)) * cos(radians(latitude)) * cos( radians(longitude) - radians(:lon)) + sin(radians(:lat)) * sin(radians(latitude)))) <= :rad"
-	posts = session.query(Post).filter(haversine).params(
+        posts = session.query(Post).filter(haversine).params(
             lat = latitude,
             lon = longitude,
             rad = radius
@@ -34,8 +34,8 @@ class PostsController:
         session = Session()
         post = session.query(Post).get(post_id)
         session.close()
-	if (post.created_at.time() + post.time_limit) >= time.time():
-		post = None
+        if (post.created_at.time() + post.time_limit) >= time.time():
+            post = None
         if post == None:
             raise web.notfound()
         else:

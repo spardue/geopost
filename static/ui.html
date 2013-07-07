@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
  
  
  <style>
@@ -165,7 +166,7 @@ function initList() {
 		var hashes = filterStr.match(new RegExp("#[0-9a-z]+", "ig"));
 		if (hashes != null){
 			hashes = hashes.join(" ");
-			$("#message").val(hashes);
+			$("#message").val(hashes+"  ");
 		}
 	});
 });
@@ -185,6 +186,7 @@ function initList() {
 		<div data-role="controlgroup" data-type="horizontal">
 			<a href="#addpost" data-rel="dialog" data-role="button" data-icon="add">Add</a>
 			<button data-icon="refresh" id="refresh">Refresh</button>
+			<a href="#map" id="mapbuton" data-role="button">Map</a>
 		</div>
 	</div>
 

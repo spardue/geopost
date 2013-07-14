@@ -13,11 +13,15 @@
 <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+<script src="https://maps.googleapis.com/maps/api/js?libraries=geometry&sensor=false&v=3.9"></script>
  
  
  <style>
- span.hash{ color : blue };
+ 
+ h3.message {white-space: normal;};
+ a.distanceLink {color : gray;};
+ small.footer { color : gray; };
+
  
  </style>
  <script>
@@ -56,6 +60,35 @@ function makeSet(array){
 	return set;
 }
 
+
+function createFooter(post) {
+	
+	var postLocation = new google.maps.LatLng(
+		post.latitude,
+		post.longitude
+	);
+	
+	currLocation = new google.maps.LatLng(
+		CURRENT_POSITION.coords.latitude,
+		CURRENT_POSITION.coords.longitude
+	);
+	
+	
+	//calculate distance in km
+	var distance = google.maps.geometry.spherical.computeDistanceBetween(currLocation, postLocation);
+	distance = Math.round(distance);
+	distance/= 1000; //km
+	
+	var footer="<small class='footer' style='color : gray'>";
+	footer+="<a href='#' rel='external' class='distanceLink' style='color : gray'>"+distance + "</a>";
+	footer+=" km away";
+	footer+=" | created at "+post.created_at; 
+	footer+="</small>";
+	
+	return footer;
+
+}
+
  
  function loadPostsIntoList() {
 	///alert("yo");
@@ -77,6 +110,10 @@ function makeSet(array){
 				posts = JSON.parse(data);
 				$("#postlist").html("");
 				for (var i = 0; i < posts.length; i++) {
+
+					footer = createFooter(posts[i]);
+
+
 					message = posts[i].message;
 					
 					var urls = message.match(new RegExp(URL_REGEX, "ig"));
@@ -91,12 +128,12 @@ function makeSet(array){
 					var hashes = message.match(new RegExp("#[a-z0-9]+", "gi"));
 					if (hashes != null) {
 						for (var j = 0; j < hashes.length; j++) {
-							message = message.replace(hashes[j], "<span class='hash'>"+hashes[j]+"</span>");
+							message = message.replace(hashes[j], "<a class='hash' href='#' rel='external'>"+hashes[j]+"</a>");
 						}
 					}					
-					$("#postlist").append("<li><h3>"+message+"</h3></li>");
+					$("#postlist").append("<li><h3 class='message'>"+message+"</h3>"+footer+"</li>");
 				}
-				$("span.hash").click(hashClickHandler);
+				$("a.hash").click(hashClickHandler);
 				$("#postlist").listview().listview("refresh");
 				filterBarSearchBy(filterStr);
 			}
@@ -116,6 +153,7 @@ function makeSet(array){
  }
  
 function hashClickHandler(e) {
+	e.preventDefault();
 	searchStr = $(e.target).html();
 	filterBarSearchBy(searchStr);
 }
@@ -130,6 +168,10 @@ function initList() {
 	
 	$("#refresh").click(function() {
 		initList();
+	});
+	
+	$("#time_limit33").click(function() {
+		alert("sup bitches");
 	});
 	
 	$("#submitpost").click(function () {
@@ -158,10 +200,10 @@ function initList() {
 		}
 	});
 	
-	$("span.hash").click(hashClickHandler);
+	$("a.hash").click(hashClickHandler);
 	
 	$("#addpost").click(function() {
-		$("#message").val('');
+		//$("#message").val('');
 		var filterStr = $('input[data-type="search"]').val();
 		var hashes = filterStr.match(new RegExp("#[0-9a-z]+", "ig"));
 		if (hashes != null){
@@ -183,10 +225,16 @@ function initList() {
 <div data-role="page" id="home">
 
 	<div data-role="header" data-position="fixed">
-		<div data-role="controlgroup" data-type="horizontal">
-			<a href="#addpost" data-rel="dialog" data-role="button" data-icon="add">Add</a>
-			<button data-icon="refresh" id="refresh">Refresh</button>
-			<a href="#map" id="mapbuton" data-role="button">Map</a>
+	
+		<div data-role="controlgroup" data-type="horizontal" style="float:left;">
+			<a href="#addpost" data-rel="dialog" data-role="button" data-icon="add" data-line="true">Add</a>
+			<button data-icon="refresh" id="refresh" data-inline="true">Refresh</button>
+			<a href="#map" id="mapbuton" data-role="button" data-inline="true">Map</a>
+		</div>
+		<div style="overflow: hidden; width: auto;">
+			<input type="range" name="slider-1" id="slider-1" value="60" min="0" max="100"/>
+		</div>
+		<div>
 		</div>
 	</div>
 
@@ -203,8 +251,10 @@ function initList() {
 
 	<div data-role="fieldcontain" class="ui-hide-label">
 		<textarea id="message" placeholder="Message"></textarea>
-		<label for="time_limit" class="select">Time limit:</label>
-		<select id="time_limt34">
+		<label for="timelimit" class="select">Time limit:</label>
+		
+
+		<select id="time_limt34" name="time_limit34">
 			<option value="60">1 minute</option>
 			<option value="300">5 minutes</option>
 			<option value="900">15 minues</option>
@@ -218,8 +268,7 @@ function initList() {
 		</select>
 		<button id="submitpost">Submit</submit>
 	</div>
-	
-	</form>
+
 	
 	
 </div>

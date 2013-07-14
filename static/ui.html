@@ -131,7 +131,15 @@ function createFooter(post) {
 							message = message.replace(hashes[j], "<a class='hash' href='#' rel='external'>"+hashes[j]+"</a>");
 						}
 					}					
-					$("#postlist").append("<li><h3 class='message'>"+message+"</h3>"+footer+"</li>");
+					
+					
+					var youtubeEmbed = "";
+					var video = message.match(new RegExp("youtube.com/.+?v=([a-zA-Z0-9_]+)"));
+					if (video != null) {
+						video = video[1];
+						youtubeEmbed="<br><iframe id='ytplayer' type='text/html' src='http://www.youtube.com/embed/"+video+"' frameborder='0'/><br>";
+					}
+					$("#postlist").append("<li><h3 class='message'>"+message+"</h3>"+youtubeEmbed+footer+"</li>");
 				}
 				$("a.hash").click(hashClickHandler);
 				$("#postlist").listview().listview("refresh");

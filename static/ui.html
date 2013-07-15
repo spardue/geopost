@@ -14,6 +14,7 @@
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?libraries=geometry&sensor=false&v=3.9"></script>
+<script src="https://rawgithub.com/timrwood/moment/2.1.0/min/moment.min.js"></script>
  
  
  <style>
@@ -78,15 +79,21 @@ function createFooter(post) {
 	var distance = google.maps.geometry.spherical.computeDistanceBetween(currLocation, postLocation);
 	distance = Math.round(distance);
 	distance/= 1000; //km
+	distance *= 0.621371;
+	distance *= 100
+	distance = Math.round(distance);
+	distance/=100;
+	
+	
+	var fromNow = moment(post.created_at).fromNow();
 	
 	var footer="<small class='footer' style='color : gray'>";
-	footer+="<a href='#' rel='external' class='distanceLink' style='color : gray'>"+distance + "</a>";
-	footer+=" km away";
-	footer+=" | created at "+post.created_at; 
+	footer+="submitted <a href='#' rel='external' class='distanceLink' style='color : gray'>"+distance + "</a>";
+	footer+=" miles away, ";
+	footer+=" "+fromNow; 
 	footer+="</small>";
 	
 	return footer;
-
 }
 
  
@@ -100,11 +107,13 @@ function createFooter(post) {
 	
 		var filterStr = $('input[data-type="search"]').val();
 		
+		var radius = $($("select")[0]).find(":selected").val();
+		
 		$.get("/posts", 
 			{
 				"longitude" :  CURRENT_POSITION.coords.longitude,
 				"latitude" : CURRENT_POSITION.coords.latitude, 				
-				"radius": 1
+				"radius": radius
 			},
 			function(data) {
 				posts = JSON.parse(data);
@@ -134,9 +143,9 @@ function createFooter(post) {
 					
 					
 					var youtubeEmbed = "";
-					var video = message.match(new RegExp("youtube.com/.+?v=([a-zA-Z0-9_]+)"));
+					var video = message.match(new RegExp("((youtube.com/.+?v=)|(youtu.be/))([a-zA-Z0-9_\-]+)"));
 					if (video != null) {
-						video = video[1];
+						video = video[video.length-1];
 						youtubeEmbed="<br><iframe id='ytplayer' type='text/html' src='http://www.youtube.com/embed/"+video+"' frameborder='0'/><br>";
 					}
 					$("#postlist").append("<li><h3 class='message'>"+message+"</h3>"+youtubeEmbed+footer+"</li>");
@@ -188,7 +197,7 @@ function initList() {
                 } else {
 		
 			//yeah..this needs to be improved and will probably break if more than one select tags are used
-			var time_limit = $($("select")[0]).find(":selected").val();
+			var time_limit = $($("select")[1]).find(":selected").val();
 			$.mobile.showPageLoadingMsg();
 			$.post(
 				"/posts", 
@@ -196,7 +205,7 @@ function initList() {
 					"message" : $("#message").val(),  
 					"longitude" :  CURRENT_POSITION.coords.longitude,
 					"latitude" : CURRENT_POSITION.coords.latitude,
-					"radius" : 1,
+					"radius" : 1, //I don't think this is necessary
 					"time_limit" : time_limit
 				}, 
 				function(data) {
@@ -219,6 +228,10 @@ function initList() {
 			$("#message").val(hashes+"  ");
 		}
 	});
+	
+	$("#radius").change(function() {
+		loadPostsIntoList();
+	});
 });
 
 
@@ -238,10 +251,15 @@ function initList() {
 			<a href="#addpost" data-rel="dialog" data-role="button" data-icon="add" data-line="true">Add</a>
 			<button data-icon="refresh" id="refresh" data-inline="true">Refresh</button>
 			<a href="#map" id="mapbuton" data-role="button" data-inline="true">Map</a>
+			<select id="radius">
+				<option value="0.160934">0.1 miles</option>
+				<option value="0.402336">0.25 miles</option>
+				<option value="0.804672" selected="true">1 mile</option>
+				<option value="4.02336">2.5 miles</option>
+				<option value="8.04672">5 miles</option>
+			</select>
 		</div>
-		<div style="overflow: hidden; width: auto;">
-			<input type="range" name="slider-1" id="slider-1" value="60" min="0" max="100"/>
-		</div>
+	
 		<div>
 		</div>
 	</div>
@@ -266,7 +284,7 @@ function initList() {
 			<option value="60">1 minute</option>
 			<option value="300">5 minutes</option>
 			<option value="900">15 minues</option>
-			<option value="1800">30 minutes</option>
+			<option value="1800" selected="true">30 minutes</option>
 			<option value="3600">1 hour</option>
 			<option value="10800">3 hours</option>
 			<option value="43200">12 hours</option>

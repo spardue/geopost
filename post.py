@@ -1,6 +1,6 @@
 from datetime import datetime
 from db import Base
-from sqlalchemy import Column, DateTime, Float, Integer, String, TIMESTAMP, text
+from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, TIMESTAMP, text
 
 import json
 import cgi
@@ -14,12 +14,14 @@ class Post(Base):
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
     time_limit = Column(Integer, nullable=False)
+    sponsored = Column(Boolean, nullable=False)
 
-    def __init__(self, message, latitude, longitude,  time_limit=60):
+    def __init__(self, message, latitude, longitude,  time_limit=60, sponsored=False):
         self.message = cgi.escape(message) # strip html/javascript
         self.latitude = latitude
         self.longitude = longitude
         self.time_limit = time_limit
+        self.sponsored = sponsored
 
     def __repr__(self):
         return json.dumps({
@@ -29,4 +31,5 @@ class Post(Base):
             "message": self.message,
             "latitude": self.latitude,
             "longitude": self.longitude,
+            "sponsored": self.sponsored
         })

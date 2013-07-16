@@ -34,8 +34,6 @@ class PostsController:
         session = Session()
         post = session.query(Post).get(post_id)
         session.close()
-        if (post.created_at.time() + post.time_limit) >= time.time():
-            post = None
         if post == None:
             raise web.notfound()
         else:

@@ -20,6 +20,7 @@
  <style>
  
  h3.message {white-space: normal;};
+ h3.sponsored { background-color: yellow ; white-space: normal;};
  a.distanceLink {color : gray;};
  small.footer { color : gray; };
 
@@ -117,6 +118,21 @@ function createFooter(post) {
 			},
 			function(data) {
 				posts = JSON.parse(data);
+				
+				
+				//move all sponsored posts in the post array to the top
+				var sponsored = [];
+				var normal = [];
+				for (var i = 0; i < posts.length; i++){
+					if (posts[i].sponsored== true){
+						sponsored.push(posts[i]);
+					} else {
+						normal.push(posts[i]);
+					}
+				}
+				posts = sponsored.concat(normal);
+				
+				
 				$("#postlist").html("");
 				for (var i = 0; i < posts.length; i++) {
 
@@ -148,7 +164,14 @@ function createFooter(post) {
 						video = video[video.length-1];
 						youtubeEmbed="<br><iframe id='ytplayer' type='text/html' src='http://www.youtube.com/embed/"+video+"' frameborder='0'/><br>";
 					}
-					$("#postlist").append("<li><h3 class='message'>"+message+"</h3>"+youtubeEmbed+footer+"</li>");
+					
+					
+					if (posts[i].sponsored == false){
+						liStyle = "";
+					} else {
+						liStyle = "background-color : yellow";
+					}
+					$("#postlist").append("<li style='"+liStyle+"'><h3 class='message'>"+message+"</h3>"+youtubeEmbed+footer+"</li>");
 				}
 				$("a.hash").click(hashClickHandler);
 				$("#postlist").listview().listview("refresh");

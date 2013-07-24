@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>Overlapping Marker Spiderfier demo</title>
+    <style>
+        html { height: auto; }
+        body { height: auto; margin: 0; padding: 0; font-family: Georgia, serif; font-size: 0.9em; }
+        table { border-collapse: collapse; border-spacing: 0; }
+        p { margin: 0.75em 0; }
+        #map_canvas { height: auto; position: absolute; bottom: 0; left: 0; right: 0; top: 0; }
+        @media print { #map_canvas { height: 950px; } }
+    </style>
+    <script src="http://maps.google.com/maps/api/js?libraries=geometry&v=3.9&amp;sensor=false"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+    <script src="oms.min.js"></script>
+    <script src="https://rawgithub.com/timrwood/moment/2.1.0/min/moment.min.js"></script>
+    <script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/src/infobox.js"></script>
+    <style>
+        .infobox-wrapper {
+            
+        }
+        #infobox {
+            border:2px solid black;
+            margin-top: 8px;
+            background: #eeeeee;
+            color:#252834;
+            font-family:Arial, Helvetica, sans-serif;
+            font-size:12px;
+            padding: .5em 1em;
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            border-radius: 2px;
+            text-shadow:0 -1px #000000;
+            -webkit-box-shadow: 0 0  8px #000;
+            box-shadow: 0 0 8px #000;
+        }
+    </style>
+    <script>
+
+//global variables
+CURRENT_POSITION = null;
+latitude = null;
+longitude = null;
+URL_REGEX = "(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]";
+
+function setLocation(position){
+	CURRENT_POSITION = position;
+	latitude = position.coords.latitude;
+	longitude = position.coords.longitude;
+}
+ 
+ 
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            setLocation(position);
+			initialize();
+        });
+    } else {
+        alert("geolocation not supported");
+    }
+}
+
+function initialize() {
+	$.mobile.showPageLoadingMsg();
+
+	//var radius = $('select[name="radius"]').val();
+	var radius = 1;
+	$.get("/posts",
+	{
+	    "longitude" : CURRENT_POSITION.coords.longitude,
+	    "latitude" : CURRENT_POSITION.coords.latitude,
+	    "radius" : radius
+	},
+	function(data) {
+
+	    parsePosts(data);
+	    spiderMap();
+	}
+	).always(function() {
+	$.mobile.hidePageLoadingMsg();
+	});
+
+}
+
+function parsePosts(data) {
+	var posts = jQuery.parseJSON(data);
+	data=[];
+	if (posts.length == 0) {
+		data.push({
+			lon: CURRENT_POSITION.coords.longitude,
+			lat: CURRENT_POSITION.coords.latitude,
+			h: $.now().toString(),
+			d: "This is your location"
+		});
+	} else {
+		for (var i = 0; i < posts.length; i++) {
+
+		var message = posts[i]['message'];
+		var parsedMessage = message;
+		parsedMessage = parseUrl(parsedMessage);
+		parsedMessage = parseHash(parsedMessage);
+        var youtubeEmbed = parseYoutube(parsedMessage);
+		console.log(message);
+		data.push({
+			  lon: posts[i]["longitude"],
+			  lat: posts[i]["latitude"],
+			  h:   "what is this?",
+              d:   parseFinal(parsedMessage, message, youtubeEmbed),
+              maxWidth: "1000px"
+			});
+		}
+	}
+	window.mapData = data;
+}
+
+function parseUrl(parsedMessage) {
+	var urls = parsedMessage.match(new RegExp(URL_REGEX, "ig"));
+					
+	if (urls != null){
+		urls = makeSet(urls);
+		for (var url in urls) {
+			parsedMessage = parsedMessage.replace(url, "<a href='"+url+"'>"+url+"</a>");
+		}
+	}
+
+	return parsedMessage;
+}
+
+function parseHash(parsedMessage) {
+	var hashes = parsedMessage.match(new RegExp("#[a-z0-9]+", "gi"));
+	if (hashes != null) {
+		for (var j = 0; j < hashes.length; j++) {
+			parsedMessage = parsedMessage.replace(hashes[j], "<a class='hash' href='#' rel='external'>"+hashes[j]+"</a>");
+		}
+	}
+
+	return parsedMessage;
+}
+
+function parseYoutube(parsedMessage) {
+	var youtubeEmbed = "";
+	var video = parsedMessage.match(new RegExp("((youtube.com/.+?v=)|(youtu.be/))([a-zA-Z0-9_\-]+)"));
+	if (video != null) {
+		video = video[video.length-1];
+		youtubeEmbed="<br><iframe id='ytplayer' type='text/html' src='http://www.youtube.com/embed/"+video+"' frameborder='0'/><br>";
+	}
+	
+	return youtubeEmbed;
+}
+
+function parseFinal(parsedMessage, message, youtubeEmbed) {
+	var finalMessage;
+    var footer = createFooter(message);
+
+    finalMessage = "<div class='infobox-wrapper'><div id=infobox style='height:240px'><h3 class='message'>"+parsedMessage+"</h3>"+footer+youtubeEmbed+"</div></div>";
+
+    return finalMessage;
+}
+
+function makeSet(array){
+	set = {}
+	for (var i = 0; i < array.length; i++){
+		set[array[i]] = true;
+	}
+	return set;
+}
+
+function createFooter(post) {
+	
+	var postLocation = new google.maps.LatLng(
+		post.latitude,
+		post.longitude
+	);
+	
+	currLocation = new google.maps.LatLng(
+		CURRENT_POSITION.coords.latitude,
+		CURRENT_POSITION.coords.longitude
+	);
+	
+	
+	//calculate distance in km
+	var distance = google.maps.geometry.spherical.computeDistanceBetween(currLocation, postLocation);
+	distance = Math.round(distance);
+	distance/= 1000; //km
+	distance *= 0.621371;
+	distance *= 100
+	distance = Math.round(distance);
+	distance/=100;
+	
+	
+	var fromNow = moment(post.created_at).fromNow();
+	
+	var footer="<small class='footer' style='color : gray'>";
+	footer+="submitted <a href='#' rel='external' class='distanceLink' style='color : gray'>"+distance + "</a>";
+	footer+=" miles away, ";
+	footer+=" "+fromNow; 
+	footer+="</small>";
+	
+	return footer;
+}
+
+function spiderMap() {
+	var gm = google.maps;
+	var map = new gm.Map(document.getElementById('map_canvas'), {
+	mapTypeId: gm.MapTypeId.ROADMAP,
+	center: new gm.LatLng(CURRENT_POSITION.coords.latitude, CURRENT_POSITION.coords.longitude), 
+	zoom: 6,  
+	scrollwheel: false
+	});
+    //var iw = new gm.InfoWindow();
+    var ib = new InfoBox({
+        disableAutoPan: true,
+        maxWidth: 350,
+        pixelOffset: new google.maps.Size(-140, 0),
+        zIndex: null,
+        boxStyle: {
+            background: "url('http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/examples/tipbox.gif') no-repeat",
+            opacity: 0.80,
+            width: "350px"
+        },
+        closeBoxMargin: "12px 4px 2px 2px",
+        closeBoxURL: "http://www.google.com/intl/en_us/mapfiles/close.gif",
+        infoBoxClearance: new google.maps.Size(1, 1)
+    });
+	var oms = new OverlappingMarkerSpiderfier(map,
+	{markersWontMove: true, markersWontHide: true});
+
+	var usualColor = 'eebb22';
+	var spiderfiedColor = 'ffee22';
+	var iconWithColor = function(color) {
+	return 'http://chart.googleapis.com/chart?chst=d_map_xpin_letter&chld=pin|+|' +
+	  color + '|000000|ffff00';
+	}
+	var shadow = new gm.MarkerImage(
+	'https://www.google.com/intl/en_ALL/mapfiles/shadow50.png',
+	new gm.Size(37, 34),  // size   - for sprite clipping
+	new gm.Point(0, 0),   // origin - ditto
+	new gm.Point(10, 34)  // anchor - where to meet map location
+	);
+
+	oms.addListener('click', function(marker) {
+	//iw.setContent(marker.desc);
+    //iw.open(map, marker);
+    ib.setContent(marker.desc);
+    ib.setPosition(marker.getPosition);
+    ib.setOptions({
+        
+    });
+    ib.open(map, marker);
+	});
+	oms.addListener('spiderfy', function(markers) {
+	for(var i = 0; i < markers.length; i ++) {
+	  markers[i].setIcon(iconWithColor(spiderfiedColor));
+	  markers[i].setShadow(null);
+	} 
+    //iw.close();
+    ib.close();
+	});
+	oms.addListener('unspiderfy', function(markers) {
+	for(var i = 0; i < markers.length; i ++) {
+	  markers[i].setIcon(iconWithColor(usualColor));
+	  markers[i].setShadow(shadow);
+	}
+	});
+
+	var bounds = new gm.LatLngBounds();
+	for (var i = 0; i < window.mapData.length; i ++) {
+	var datum = window.mapData[i];
+	var loc = new gm.LatLng(datum.lat, datum.lon);
+	bounds.extend(loc);
+	var marker = new gm.Marker({
+	  position: loc,
+	  title: datum.h,
+	  map: map,
+	  icon: iconWithColor(usualColor),
+	  shadow: shadow
+	});
+	marker.desc = datum.d;
+	oms.addMarker(marker);
+	}
+	map.fitBounds(bounds);
+
+	// for debugging/exploratory use in console
+	window.map = map;
+	window.oms = oms;
+}
+
+window.onload = function() {
+    getLocation();
+    }
+  </script>
+</head>
+	<body>
+		<div id="map_canvas">
+		</div>
+	</body>
+</html>
